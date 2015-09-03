@@ -1,3 +1,2 @@
 # ACM
-For HDOJ ACM Test
-In Java
+For HDOJ ACM Test In Java
