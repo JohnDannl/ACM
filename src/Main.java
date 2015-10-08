@@ -1,159 +1,141 @@
-import java.util.Scanner;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.io.StreamTokenizer;
 
 
 public class Main {
-	public static void main(String[] args){
-		Scanner in= new Scanner(System.in);
-		int row=in.nextInt();
-		int column=in.nextInt();
-		int[][] a=new int[row][column];
-		for(int i=0;i<row;i++)
-			for(int j=0;j<column;j++)
-				a[i][j]=in.nextInt();
-		int[][] sum=new int[row][column];
-		for(int i=0;i<row;i++)	// initialize the sum
-			for(int j=0;j<column;j++)
-				sum[i][j]=-1;		
-		
-		// deal with the first column	
-		int top=0,bottom=0,left=0;		
-		for(int i=0;i<row;i++){// top down
-			if(a[i][0]==-1){
-				sum[i][0]=-1;
-				top=0;
-			}
-			else{
-				top+=a[i][0];
-				sum[i][0]=top;
-			}
+	public static void main(String[] args) throws IOException{
+		StreamTokenizer in=new StreamTokenizer(new BufferedReader(new InputStreamReader(System.in)));
+		PrintWriter out=new PrintWriter(new OutputStreamWriter(System.out));		
+		while(in.nextToken()!=StreamTokenizer.TT_EOF){
+			double thres_deg=in.nval;
+			if(thres_deg==-1)break;
+			double percent=happyTime2(thres_deg);
+			out.println(String.format("%.3f", percent));
 		}
-		for(int i=row-1;i>=0;i--){ // bottom up
-			if(a[i][0]==-1)bottom=0;// no need to update sum[i][0],because sum[i][0]>=-1
-			else{
-				bottom+=a[i][0];
-				if(bottom>sum[i][0])sum[i][0]=bottom; // the maximum score				
-			}
-		}
-		// deal with the left columns
-		int[] topsum=new int[row]; // not through the top
-		int[] bottomsum=new int[row]; // not through the bottom
-		int[] topsumt=new int[row];	// through the top
-		int[] bottomsumt=new int[row]; // through the bottom
-		int k=0;boolean pass=false,reached=false;
-		for(int j=1;j<column;j++){
-			k=0;pass=false;reached=false;			
-			for(int i=0;i<row;i++){// top to bottom
-				if(a[i][j]==-1){
-					topsum[i]=-1;
-					topsumt[i]=-1;
-					continue;
-				}			
-				if(i==0){
-					// detect if the first row can be reached directly 
-					if(sum[i][j-1]!=-1){
-						pass=true;	
-						left=sum[i][j-1]+a[i][j];
-					}
-					else {
-						pass=false;
-						left=-1;
-					}
-					// for topsum not through the top
-					topsum[i]=left;
-					
-					if(!pass){
-						// for topsumt,the first row,need to detect whether it can reach through the top
-						k=row-1;					
-						while(k>0){ // a linear detection
-							topsumt[k]=-1;
-							if(a[k][j]!=-1&&sum[k][j-1]!=-1){reached=true;break;}
-							if(a[k][j]==-1){reached=false;break;}						
-							k--;
-						}
-						if(reached)topsumt[i]=a[i][j];
-						else topsumt[i]=-1;
-					}									
+		out.flush();
+	}
+	public static double happyTime2(double thres_deg){
+		double sum=0;
+		for(int h=0;h<12;h++)
+			for(int m=0;m<60;m++){
+				// dsh=719/120*s-30h-0.5m
+				double[] a=solveInequation(719/120.0,-30*h-0.5*m,thres_deg);
+				// dsm=5.9s-6m
+				double[] b=solveInequation(5.9,-6*m,thres_deg);
+				// dhm=11/120*s-30h+5.5m
+				double[] c=solveInequation(11/120.0,-30*h+5.5*m,thres_deg);
+				double[] e=intersection(a,b,c);
+				BoundPoint[] bps=new BoundPoint[e.length];
+				for(int i=0;i<e.length/2;i++){
+					bps[2*i]=new BoundPoint(e[2*i],false);
+					bps[2*i+1]=new BoundPoint(e[2*i+1],true);
 				}
-				else{ // the other row excluding the first row
-					// for topsum
-					top=topsum[i-1];
-					if(top!=-1)top+=a[i][j];	
-					if(sum[i][j-1]!=-1)left=sum[i][j-1]+a[i][j];
-					else left=-1;
-					if(top>left)topsum[i]=top;
-					else topsum[i]=left;
-					// for topsumt
-					if(reached&&i<k){
-						top=topsumt[i-1];
-						if(top!=-1)top+=a[i][j];	
-						if(top>left)topsumt[i]=top;
-						else topsumt[i]=left;
+				/*for(int i=0;i<bps.length;i++)
+					System.out.print(bps[i].isEnd+" "+bps[i].value);
+				System.out.println();	*/			
+				BoundPoint.bubbleSort(bps);
+				/*for(int i=0;i<bps.length;i++)
+					System.out.print(bps[i].isEnd+" "+bps[i].value);
+				System.out.println();*/
+				int start=0,deep=0;
+				// the union set
+				for(int i=0;i<bps.length;i++){					
+					if(bps[i].isEnd)deep--;
+					else deep++;
+					if(deep==0){
+						sum+=(bps[i].value-bps[start].value);						
+						start=i+1;
 					}
-				}				
-			}
-			if(reached)
-			for(int i=0;i<row;i++){
-				if(topsumt[i]>topsum[i])topsum[i]=topsumt[i];
-			}
-			k=0;pass=false;reached=false;
-			for(int i=row-1;i>=0;i--){ // bottom up
-				if(a[i][j]==-1){
-					bottomsum[i]=-1;
-					bottomsumt[i]=-1;
-					continue;
 				}
-				if(i==row-1){ 				
-					if(sum[i][j-1]!=-1){
-						pass=true;
-						left=sum[i][j-1]+a[i][j];
-						}
-					else{
-						pass=false;
-						left=-1;
-					}
-					bottomsum[i]=left;
-					
-					// the last row,need to detect if it can reach through the bottom	
-					if(!pass){
-						k=0;
-						while(k<row-1){
-							bottomsumt[k]=-1;
-							if(a[k][j]!=-1&&sum[k][j-1]!=-1){reached=true;break;}
-							if(a[k][j]==-1){reached=false;break;}
-							k++;
-						}
-						if(reached)bottomsumt[i]=a[i][j];
-						else bottomsumt[i]=-1;
-					}					
-				}
-				else{ // the other row excluding the last row
-					// for bottomsum
-					bottom=bottomsum[i+1];
-					if(bottom!=-1)bottom+=a[i][j];
-					left=sum[i][j-1];
-					if(left!=-1)left+=a[i][j];
-					if(bottom>left)bottomsum[i]=bottom;
-					else bottomsum[i]=left;
-					// for bottomsumt
-					if(reached&&i>k){
-						bottom=bottomsumt[i+1];
-						if(bottom!=-1)bottom+=a[i][j];
-						if(bottom>left)bottomsumt[i]=bottom;
-						else bottomsumt[i]=left;
-					}
-				}				
 			}
-			for(int i=0;i<row;i++){
-				if(reached&&bottomsumt[i]>bottomsum[i])bottomsum[i]=bottomsumt[i];
-				// the sum[i][j] assigned the maximum one
-				if(bottomsum[i]>topsum[i])sum[i][j]=bottomsum[i];
-				else sum[i][j]=topsum[i];
+		return sum*100/(3600.0*12);
+	}
+	static class BoundPoint{
+		double value;
+		boolean isEnd=false;
+		public BoundPoint(double value,boolean isEnd){
+			this.value=value;
+			this.isEnd=isEnd;
+		}
+		public static void bubbleSort(BoundPoint[] array){
+			for(int j=0;j<array.length;j++){
+				for(int k=1;k<array.length-j;k++){
+					if(array[k-1].value>array[k].value){
+						BoundPoint tmp=array[k];
+						array[k]=array[k-1];
+						array[k-1]=tmp;
+					}
+				}
 			}
 		}
-		int max=-1;
-		for(int i=0;i<row;i++){
-			if(sum[i][column-1]>max)max=sum[i][column-1];
+	}
+	public static double[] intersection(double[] a,double[] b,double[] c){
+		double[] d=new double[8];
+		for(int i=0;i<d.length;i++)
+			d[i]=0;
+		for(int i=0;i<a.length/2;i++)
+			for(int j=0;j<b.length/2;j++)
+			{
+				if(a[2*i]<a[2*i+1]&&b[2*j]<b[2*j+1]){
+					d[4*i+2*j]=a[2*i]>b[2*j]?a[2*i]:b[2*j];
+					d[4*i+2*j+1]=a[2*i+1]<b[2*j+1]?a[2*i+1]:b[2*j+1];
+				}
+			}		
+		double[] e=new double[16];
+		for(int i=0;i<e.length;i++)e[i]=0;
+		for(int i=0;i<d.length/2;i++)
+			for(int j=0;j<c.length/2;j++)
+				if(d[2*i]<d[2*i+1]&&c[2*j]<c[2*j+1]){
+					e[4*i+2*j]=d[2*i]>c[2*j]?d[2*i]:c[2*j];
+					e[4*i+2*j+1]=d[2*i+1]>c[2*j+1]?d[2*i+1]:c[2*j+1];
+				}
+		return e;
+	}
+	public static double[] solveInequation(double a,double b,double D){
+		double[] result=new double[4];
+		result[0]=(D-b)/a;
+		result[1]=(360-D-b)/a;
+		result[2]=(D-360-b)/a;
+		result[3]=(-b-D)/a;
+		// The seconds should be between 0 and 60
+		for(int i=0;i<result.length;i++){
+			if(result[i]<0)result[i]=0;
+			if(result[i]>60)result[i]=60;
 		}
-		System.out.println(max);
+		return result;
+	}
+	public static double happyTime(double thres_deg){
+		int count=0;
+		double[] degree=new double[3];
+		for(int i=0;i<12*3600;i++){
+			degree[0]=(i%60)*360/(double)60;
+			degree[1]=(i%3600)*360/(double)3600;
+			degree[2]=(i%(12*3600))*360/(double)(12*3600);
+			/*degree[0]=(i*6)%360;
+			degree[1]=(0.1*i)%360;
+			degree[2]=(360.0/(12*3600)*i)%360;*/
+			bubbleSort(degree);
+			if((degree[2]-degree[1])>=thres_deg
+					&&(degree[1]-degree[0])>=thres_deg
+					&&(degree[0]+360-degree[2])>=thres_deg)count++;
+			
+		}
+		double percent=(double)count*100/(3600*12);
+		return percent;
+	}
+	public static void bubbleSort(double[] array){
+		for(int j=0;j<array.length;j++){
+			for(int k=1;k<array.length-j;k++){
+				if(array[k-1]>array[k]){
+					double tmp=array[k];
+					array[k]=array[k-1];
+					array[k-1]=tmp;
+				}
+			}
+		}
 	}
 }

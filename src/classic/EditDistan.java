@@ -1,3 +1,4 @@
+package classic;
 import java.util.Scanner;
 
 
@@ -43,9 +44,46 @@ public class EditDistan {
 	    // the distance is the cost for transforming all letters in both strings        
 	    return cost[len0 - 1];                                                          
 	}
+	public static int edit_distance2(String src,String dst){
+		byte[] bs=src.getBytes();
+		byte[] bd=dst.getBytes();
+		int slen=bs.length;
+		int dlen=bd.length;
+		int[] cost=new int[dlen];
+		int[] newcost=new int[dlen];
+		int cost_delete=0,cost_insert=0,cost_replace=0;
+		for(int j=0;j<dlen;j++){
+			if(j==0){
+				if(bd[j]==bs[0])cost[j]=0;
+				else cost[j]=1;
+			}else{
+				if(bd[j]==bs[0])cost[j]=j;
+				else cost[j]=cost[j-1]+1;
+			}			
+		}
+		for(int i=1;i<slen;i++){			
+			for(int j=0;j<dlen;j++){
+				if(j==0){
+					if(bs[i]==bd[j])newcost[j]=i;
+					else newcost[j]=cost[j]+1;
+				}else{
+					if(bs[i]==bd[j])newcost[j]=cost[j-1];
+					else{
+						cost_insert=newcost[j-1]+1;
+						cost_delete=cost[j]+1;
+						cost_replace=cost[j-1]+1;
+						newcost[j]=Math.min(cost_replace,Math.min(cost_delete, cost_insert));
+					}					
+				}				
+			}
+			System.arraycopy(newcost, 0, cost, 0, cost.length);
+		}
+		return newcost[newcost.length-1];
+	}
 	public static void main(String[] args){
 		String src="string";
 		String dst="strim";
 		System.out.println(edit_distance(src,dst));
+		System.out.println(edit_distance2(src,dst));
 	}
 }
