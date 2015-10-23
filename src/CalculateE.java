@@ -1,5 +1,5 @@
 
-public class Main {
+public class CalculateE {
 	public static void main(String[] args){
 		System.out.println("n e");
 		System.out.println("- -----------");
