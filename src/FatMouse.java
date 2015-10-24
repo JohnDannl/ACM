@@ -1,5 +1,10 @@
 import java.util.Scanner;
 
+/**
+ * HDOJ problem 1009
+ * @author dannl
+ *
+ */
 public class FatMouse {
 	public static void main(String[] args){
 		Scanner in=new Scanner(System.in);

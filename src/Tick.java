@@ -5,7 +5,11 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.StreamTokenizer;
 
-
+/**
+ * HDOJ problem 1006
+ * @author dannl
+ *
+ */
 public class Tick {
 	public static void main(String[] args) throws IOException{
 		StreamTokenizer in=new StreamTokenizer(new BufferedReader(new InputStreamReader(System.in)));

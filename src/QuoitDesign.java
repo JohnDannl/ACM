@@ -1,6 +1,11 @@
 import java.util.Scanner;
 
-
+/**
+ * HDOJ problem 1007<br>
+ * Still memory limit exceeded
+ * @author dannl
+ *
+ */
 public class QuoitDesign {
 	public static void main(String[] args){
 		Scanner in=new Scanner(System.in);

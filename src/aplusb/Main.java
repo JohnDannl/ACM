@@ -1,10 +1,10 @@
 package aplusb;
+import java.util.Scanner;
 /**
- * <1 The answer should contain a Main class name,
+ * <b>HDOJ problem 1000</b> <br>
+ * <1 The answer should contain a Main class name,<br>
  * <2 should not contain package info
  */
-
-import java.util.Scanner;
 public class Main {
 	public static void main(String[] args){
 		Scanner scan=new Scanner(System.in);

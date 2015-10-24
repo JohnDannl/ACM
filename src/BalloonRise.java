@@ -8,6 +8,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+/**
+ * HDOJ problem 1004
+ * @author dannl
+ *
+ */
 public class BalloonRise {
 	public static void main(String[] args) throws IOException{
 		StreamTokenizer in =new StreamTokenizer(new BufferedReader(new InputStreamReader(System.in)));

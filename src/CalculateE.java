@@ -1,4 +1,9 @@
 
+/**
+ * HDOJ problem 1012
+ * @author dannl
+ *
+ */
 public class CalculateE {
 	public static void main(String[] args){
 		System.out.println("n e");

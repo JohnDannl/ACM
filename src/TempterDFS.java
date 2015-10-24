@@ -1,7 +1,12 @@
 import java.util.ArrayList;
 import java.util.Scanner;
 
-
+/**
+ * HDOJ problem 1010<br>
+ * Notice the odd and even branch-cut
+ * @author dannl
+ *
+ */
 public class TempterDFS {
 	public static boolean success=false;
 	public static void main(String[] args){

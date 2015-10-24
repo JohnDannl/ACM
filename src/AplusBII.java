@@ -5,7 +5,11 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.StreamTokenizer;
 
-
+/**
+ * HDOJ problem 1002
+ * @author dannl
+ *
+ */
 public class AplusBII {
 	public static void main(String[] args) throws IOException{
 		BufferedReader in =new BufferedReader(new InputStreamReader(System.in));

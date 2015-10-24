@@ -1,7 +1,11 @@
 import java.util.ArrayList;
 import java.util.Scanner;
 
-
+/**
+ * HDOJ problem 1005
+ * @author dannl
+ *
+ */
 public class NumSeq {
 	public static void main(String[] args){
 		Scanner in=new Scanner(System.in);

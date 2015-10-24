@@ -2,7 +2,8 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 /**
- * not yet completed
+ * HDOJ problem 1011<br>
+ * confused,wrong answer
  * @author dannl
  *
  */

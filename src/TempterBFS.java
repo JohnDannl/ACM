@@ -1,6 +1,12 @@
 import java.util.ArrayList;
 import java.util.Scanner;
 
+/**
+ * HDOJ problem 1010<br>
+ * Breath-First-Search,but time limit exceeded 
+ * @author dannl
+ *
+ */
 public class TempterBFS {
 	public static boolean success;
 	public static void main(String[] args){
