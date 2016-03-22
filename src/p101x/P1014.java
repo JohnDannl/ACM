@@ -1,4 +1,4 @@
-package p1020;
+package p101x;
 import java.util.HashSet;
 import java.util.Scanner;
 import java.util.Set;

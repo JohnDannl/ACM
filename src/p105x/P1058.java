@@ -1,3 +1,4 @@
+package p105x;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -8,7 +9,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.TreeSet;
 
-public class HumbleNum {
+/**
+ * HDOJ Problem 1058
+ * @author dannl
+ *
+ */
+public class P1058 {
 	public static long[] generateHumbleNumber(){
 		int N=5842;
 		long[] humbleArray=new long[N];

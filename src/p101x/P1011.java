@@ -1,4 +1,4 @@
-package p1020;
+package p101x;
 import java.util.ArrayList;
 import java.util.Scanner;
 

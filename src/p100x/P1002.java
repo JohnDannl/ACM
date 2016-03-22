@@ -1,4 +1,4 @@
-package p1010;
+package p100x;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;

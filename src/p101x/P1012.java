@@ -1,4 +1,4 @@
-package p1020;
+package p101x;
 
 /**
  * HDOJ problem 1012

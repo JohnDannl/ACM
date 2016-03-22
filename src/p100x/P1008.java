@@ -1,4 +1,4 @@
-package p1010;
+package p100x;
 import java.util.Scanner;
 
 /**
