@@ -1,28 +1,97 @@
 package p100x;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Scanner;
 
 /**
  * HDOJ problem 1007<br>
- * Still memory limit exceeded
+ * Still Time limit exceeded
  * @author dannl
  *
  */
 public class P1007 {
-	private static PointEx[] points = new PointEx[100000];
 	public static void main(String[] args){
 		Scanner in=new Scanner(System.in);
 		int n=in.nextInt();		
 		while(n!=0){
-			float x, y;
+			PointEx[] points = new PointEx[n];
+			double x, y;
 			for(int i = 0; i < n; i++){
-				x = in.nextFloat();
-				y = in.nextFloat();
+				x = in.nextDouble();
+				y = in.nextDouble();
 				points[i] = new PointEx(x, y);
 			}
-			double min=solveMinDis2(n);
-			System.out.println(String.format("%.2f", min/2));
+			double min = solveMinDis2(points, n);
+			System.out.println(String.format("%.2f", min / 2));
 			n=in.nextInt();
 		}			
+	}
+	
+	public static void printA(int[] a) {
+		for (int i : a) {
+			System.out.print(i + ",");
+		}
+		System.out.println();
+	}
+	private static Comparator<PointEx> compX = new Comparator<PointEx>() {
+
+		@Override
+		public int compare(PointEx o1, PointEx o2) {
+			// TODO Auto-generated method stub
+			if (o1.x == o2.x) {
+				return o1.y > o2.y ? 1 : o1.y < o2.y ? -1 : 0;
+			}
+			return o1.x > o2.x ? 1 : -1;
+		}
+	};
+	
+	private static Comparator<PointEx> compY = new Comparator<PointEx>() {
+
+		@Override
+		public int compare(PointEx o1, PointEx o2) {
+			// TODO Auto-generated method stub
+			if (o1.y== o2.y) {
+				return o1.x > o2.x ? 1 : o1.x < o2.x ? -1 : 0;
+			}
+			return o1.y > o2.y ? 1 : -1;
+		}		
+	};
+	
+	public static double solveMinDis3(PointEx[] points, int n) {
+		Arrays.sort(points, 0, n, compX);
+		return _solveMinDis3(points, 0, n - 1);
+	}
+	public static double _solveMinDis3(PointEx[] points, int p, int r) {
+		if (p == r) return Double.MAX_VALUE;
+		if (r - p == 1) return distance(points[p].x, points[p].y, points[r].x, points[r].y);
+		int m = (p + r) / 2;
+		double left = _solveMinDis3(points, p, m);
+		double right = _solveMinDis3(points, m + 1, r);
+		double min = left < right ? left : right;
+		double leftX = points[m].x - min;
+		double rightX = points[m].x + min;
+		int start = m;
+		for (int i = m; i > p; i--) {
+			if (points[i].x < leftX) break;
+			start--;
+		}
+		
+		int end = m;
+		for (int i = m; i < r; i++) {
+			if (points[i].x > rightX) break;
+			end++;
+		}
+		PointEx[] pointY = new PointEx[end - start + 1];
+		System.arraycopy(points, start, pointY, 0, pointY.length);
+		Arrays.sort(pointY, 0,  pointY.length, compY);
+		for(int i = 0; i < pointY.length; i++) {
+			for (int j = i + 1; j <= i + 7 && j < pointY.length; j++) {
+				if (pointY[j].y - pointY[i].y > min) break;
+				double tmpd = distance(points[i].x, points[i].y, points[j].x, points[j].y);
+				if (tmpd < min) min = tmpd;
+			}
+		}
+		return min;
 	}
 	/**
 	 * A solution exhausting all distances : O(n^2)
@@ -42,58 +111,59 @@ public class P1007 {
 		return min;
 	}
 	public static double distance(double x1,double y1,double x2,double y2){
-		return Math.sqrt(Math.pow(x1-x2, 2)+Math.pow(y1-y2, 2));
+		return Math.sqrt(Math.pow(x1-x2, 2) + Math.pow(y1-y2, 2));
 	}
-	public static double solveMinDis2(int n){
-		quickSortX(0, n-1);		
-		return _solveMinDis2(0, n-1);
+	public static double solveMinDis2(PointEx[] points, int n){
+		quickSortX(points, 0, n-1);		
+		return _solveMinDis2(points, 0, n-1);
 	}
-	public static double _solveMinDis2(int p, int r) {
-		//if (r <= p) return Double.MAX_VALUE;
+	public static double _solveMinDis2(PointEx[] points, int p, int r) {
+		if (r <= p) return Double.MAX_VALUE;
 		// for two points
-		if(r-p == 1)return distance(points[p].x,points[p].y,points[r].x,points[r].y);
+		if(r-p == 1) return distance(points[p].x,points[p].y,points[r].x,points[r].y);
 		// for three points
-		if(r-p==2){
-			double d1=distance(points[p].x, points[p].y, points[p + 1].x, points[p + 1].y);
-			double d2=distance(points[p].x, points[p].y, points[p + 2].x, points[p + 2].y);
-			double d3=distance(points[p + 1].x, points[p + 1].y, points[p + 2].x, points[p + 2].y);
-			double d4=d1<d2?d1:d2;
-			return d3<d4?d3:d4;
+		if(r-p == 2) {
+			double d1 = distance(points[p].x, points[p].y, points[p + 1].x, points[p + 1].y);
+			double d2 = distance(points[p].x, points[p].y, points[p + 2].x, points[p + 2].y);
+			double d3 = distance(points[p + 1].x, points[p + 1].y, points[p + 2].x, points[p + 2].y);
+			double d4 = d1 < d2 ? d1 : d2;
+			return d3 < d4 ? d3 : d4;
 		}
 		// if more than 3 points,use divide-and-conquer
-		int m=p+(p+r)/2;		
-		double d1=_solveMinDis2(p, m);
-		double d2=_solveMinDis2(m+1, r);
-		double d3=d1<d2?d1:d2;
+		int m = (p + r) / 2;		
+		double d1 = _solveMinDis2(points, p, m);
+		double d2 = _solveMinDis2(points, m + 1, r);
+		double d3 = d1 < d2 ? d1 : d2;
 		double xmin = points[m].x - d3;
 		double xmax = points[m].x + d3;
 		
 		int left = m;
-		for(int i = m; i >= p; i--) {
+		for(int i = m; i > p; i--) {
 			if(points[i].x < xmin) break;
 			left--;			
 		}
-		if (left < p) left = p;
 		int right = m;
-		for(int i = m; i <=r; i++) {
+		for(int i = m; i < r; i++) {
 			if(points[i].x > xmax) break;
 			right++;
 		}
-		if (right > r) right = r;
-		quickSortY(left, right);
+		PointEx[] pointY = new PointEx[right - left + 1];
+		System.arraycopy(points, left, pointY, 0, pointY.length);
+		quickSortY(pointY, 0, pointY.length - 1);
 		// for each x[i],no more than 6 y[yind] is qualified
-		for (int i = left; i <= right; i++) {
-			for (int j = i + 1; j < i + 7 && j <= right; j++) {
-				double tmpd = distance(points[i].x, points[i].y, points[j].x, points[j].y);
+		for (int i = 0; i < pointY.length; i++) {
+			for (int j = i + 1; j <= i + 7 && j < pointY.length; j++) {
+				if(pointY[j].y - pointY[i].y > d3) break;
+				double tmpd = distance(pointY[i].x, pointY[i].y, pointY[j].x, pointY[j].y);
 				if (tmpd < d3) d3 = tmpd;
 			}
 		}
 		return d3;
 	}
 	static class PointEx {
-		public float x,y;
+		public double x,y;
 		
-		public PointEx(float x,float y){
+		public PointEx(double x, double y){
 			this.x=x;
 			this.y=y;
 		}
@@ -175,7 +245,7 @@ public class P1007 {
 	 * @param p : the start index
 	 * @param r : the end index
 	 */
-	public static void quickSortX(int p, int r){
+	public static void quickSortX(PointEx[] points, int p, int r){
 		if (p >= r) return;	// end the iteration
 		PointEx head = points[p],tmp;
 		int i = p,j = r + 1;
@@ -189,10 +259,10 @@ public class P1007 {
 		}
 		points[p] = points[j];
 		points[j] = head;
-		quickSortX(p, j - 1);// the left part
-		quickSortX(j + 1, r);// the right part
+		quickSortX(points, p, j - 1);// the left part
+		quickSortX(points, j + 1, r);// the right part
 	}
-	public static void quickSortY(int p, int r){
+	public static void quickSortY(PointEx[] points, int p, int r){
 		if(p >= r)return;	// end the iteration
 		PointEx head = points[p],tmp;
 		int i = p, j = r+1;
@@ -206,7 +276,7 @@ public class P1007 {
 		}
 		points[p] = points[j];
 		points[j] = head;
-		quickSortY(p, j - 1);// the left part
-		quickSortY(j + 1, r);// the right part
+		quickSortY(points, p, j - 1);// the left part
+		quickSortY(points, j + 1, r);// the right part
 	}
 }
