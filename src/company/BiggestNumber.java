@@ -12,7 +12,7 @@ public class BiggestNumber {
 	static class Ans implements Comparable<Ans>{
 		int len = 0;
 		int[] number = new int[30];
-		@Override
+		
 		public int compareTo(Ans other) {
 			// TODO Auto-generated method stub
 			if (len > other.len) return 1;
