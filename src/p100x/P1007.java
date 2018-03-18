@@ -35,7 +35,7 @@ public class P1007 {
 	}
 	private static Comparator<PointEx> compX = new Comparator<PointEx>() {
 
-		@Override
+		
 		public int compare(PointEx o1, PointEx o2) {
 			// TODO Auto-generated method stub
 			if (o1.x == o2.x) {
@@ -47,7 +47,7 @@ public class P1007 {
 	
 	private static Comparator<PointEx> compY = new Comparator<PointEx>() {
 
-		@Override
+		
 		public int compare(PointEx o1, PointEx o2) {
 			// TODO Auto-generated method stub
 			if (o1.y== o2.y) {
